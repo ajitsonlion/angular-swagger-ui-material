@@ -7,8 +7,7 @@
                 <div ng-if="vm.description" ng-bind-html="::vm.description"
                      class="markdown-body"></div>
             </div>
-            <div style="padding: 4px 4px 0 4px" ng-include="'modules/meta/meta.html'"></div>
-        </div>
+         </div>
         <div ng-controller="ContentController as vm">
             <div ng-if="vm.data.ui.grouped" layout="row" layout-wrap layout-padding>
                 <div flex-xs="100"
@@ -42,7 +41,7 @@
     class="md-sidenav-right md-whiteframe-z2"
     md-is-open="vm.data.ui.sidenavOpen"
     md-is-locked-open="vm.data.ui.sidenavLocked">
-        <md-toolbar ng-if="vm.sop" class="md-accent" md-whiteframe="2">
+        <md-toolbar ng-if="vm.sop" class="md-accent" md-whiteframe="5">
             <div class="md-toolbar-tools">
                 <span flex><span ng-repeat="t in vm.sop.tags">{{t}}<span ng-if="!$last">, </span></span></span>
                 <md-button hide show-gt-xs
@@ -75,9 +74,6 @@
                  ng-class="{'sum-slide-disabled': vm.omg}">
             <md-tab label="Info" layout="column">
                 <div class="sum-fade" ng-hide="vm.omg" ng-include="'modules/detail/request/request.html'"></div>
-            </md-tab>
-            <md-tab label="Scripts" layout="column">
-                <div class="sum-fade" ng-hide="vm.omg" ng-include="'modules/detail/scripts/scripts.html'"></div>
             </md-tab>
             <md-tab class="sum-tab-result" label="Result" ng-disabled="!vm.sop.explorerResult">
                 <div class="sum-fade" ng-hide="vm.omg" ng-show="vm.sop.explorerResult"
