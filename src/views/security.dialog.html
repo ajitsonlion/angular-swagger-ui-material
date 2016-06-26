@@ -10,13 +10,12 @@
             <md-tab label="{{s.flow ? s.flow : s.type}}" ng-repeat="(name, s) in vm.security">
                 <div style="padding: 24px 24px 0 24px">
                     <form ng-submit="closeDialog()">
-                        <h3 ng-if="s.type == 'apiKey'" class="md-title" style="margin-top: 0">API Key
-                            Authentication</h3>
+                        <h3 ng-if="s.type == 'apiKey'" class="md-title" style="margin-top: 0">Offline Refresh Token</h3>
                         <div ng-if="s.type == 'apiKey'" layout="column">
                             <p ng-if="s.description" ng-bind-html="s.description"
                                class="markdown-body sum-short-md"></p>
                             <md-input-container class="sum-hide-spacer">
-                                <label>API key</label>
+                                <label>Offline Refresh Token</label>
                                 <input type="text" ng-model="vm.credentials[name].apiKey">
                             </md-input-container>
                         </div>

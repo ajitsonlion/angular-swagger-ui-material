@@ -1,1 +1,1863 @@
-{"swagger":"2.0","info":{"description":"This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.","version":"1.0.0","title":"Swagger Petstore","termsOfService":"http://swagger.io/terms/","contact":{"email":"apiteam@swagger.io"},"license":{"name":"Apache 2.0","url":"http://www.apache.org/licenses/LICENSE-2.0.html"}},"host":"petstore.swagger.io","basePath":"/v2","tags":[{"name":"pet","description":"Everything about your Pets","externalDocs":{"description":"Find out more","url":"http://swagger.io"}},{"name":"store","description":"Access to Petstore orders"},{"name":"user","description":"Operations about user","externalDocs":{"description":"Find out more about our store","url":"http://swagger.io"}}],"schemes":["http"],"paths":{"/pet":{"post":{"tags":["pet"],"summary":"Add a new pet to the store","description":"","operationId":"addPet","consumes":["application/json","application/xml"],"produces":["application/xml","application/json"],"parameters":[{"in":"body","name":"body","description":"Pet object that needs to be added to the store","required":true,"schema":{"$ref":"#/definitions/Pet"}}],"responses":{"405":{"description":"Invalid input"}},"security":[{"petstore_auth":["write:pets","read:pets"]}]},"put":{"tags":["pet"],"summary":"Update an existing pet","description":"","operationId":"updatePet","consumes":["application/json","application/xml"],"produces":["application/xml","application/json"],"parameters":[{"in":"body","name":"body","description":"Pet object that needs to be added to the store","required":true,"schema":{"$ref":"#/definitions/Pet"}}],"responses":{"400":{"description":"Invalid ID supplied"},"404":{"description":"Pet not found"},"405":{"description":"Validation exception"}},"security":[{"petstore_auth":["write:pets","read:pets"]}]}},"/pet/findByStatus":{"get":{"tags":["pet"],"summary":"Finds Pets by status","description":"Multiple status values can be provided with comma separated strings","operationId":"findPetsByStatus","produces":["application/xml","application/json"],"parameters":[{"name":"status","in":"query","description":"Status values that need to be considered for filter","required":true,"type":"array","items":{"type":"string","enum":["available","pending","sold"],"default":"available"},"collectionFormat":"multi"}],"responses":{"200":{"description":"successful operation","schema":{"type":"array","items":{"$ref":"#/definitions/Pet"}}},"400":{"description":"Invalid status value"}},"security":[{"petstore_auth":["write:pets","read:pets"]}]}},"/pet/findByTags":{"get":{"tags":["pet"],"summary":"Finds Pets by tags","description":"Muliple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.","operationId":"findPetsByTags","produces":["application/xml","application/json"],"parameters":[{"name":"tags","in":"query","description":"Tags to filter by","required":true,"type":"array","items":{"type":"string"},"collectionFormat":"multi"}],"responses":{"200":{"description":"successful operation","schema":{"type":"array","items":{"$ref":"#/definitions/Pet"}}},"400":{"description":"Invalid tag value"}},"security":[{"petstore_auth":["write:pets","read:pets"]}],"deprecated":true}},"/pet/{petId}":{"get":{"tags":["pet"],"summary":"Find pet by ID","description":"Returns a single pet","operationId":"getPetById","produces":["application/xml","application/json"],"parameters":[{"name":"petId","in":"path","description":"ID of pet to return","required":true,"type":"integer","format":"int64"}],"responses":{"200":{"description":"successful operation","schema":{"$ref":"#/definitions/Pet"}},"400":{"description":"Invalid ID supplied"},"404":{"description":"Pet not found"}},"security":[{"api_key":[]}]},"post":{"tags":["pet"],"summary":"Updates a pet in the store with form data","description":"","operationId":"updatePetWithForm","consumes":["application/x-www-form-urlencoded"],"produces":["application/xml","application/json"],"parameters":[{"name":"petId","in":"path","description":"ID of pet that needs to be updated","required":true,"type":"integer","format":"int64"},{"name":"name","in":"formData","description":"Updated name of the pet","required":false,"type":"string"},{"name":"status","in":"formData","description":"Updated status of the pet","required":false,"type":"string"}],"responses":{"405":{"description":"Invalid input"}},"security":[{"petstore_auth":["write:pets","read:pets"]}]},"delete":{"tags":["pet"],"summary":"Deletes a pet","description":"","operationId":"deletePet","produces":["application/xml","application/json"],"parameters":[{"name":"api_key","in":"header","required":false,"type":"string"},{"name":"petId","in":"path","description":"Pet id to delete","required":true,"type":"integer","format":"int64"}],"responses":{"400":{"description":"Invalid ID supplied"},"404":{"description":"Pet not found"}},"security":[{"petstore_auth":["write:pets","read:pets"]}]}},"/pet/{petId}/uploadImage":{"post":{"tags":["pet"],"summary":"uploads an image","description":"","operationId":"uploadFile","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[{"name":"petId","in":"path","description":"ID of pet to update","required":true,"type":"integer","format":"int64"},{"name":"additionalMetadata","in":"formData","description":"Additional data to pass to server","required":false,"type":"string"},{"name":"file","in":"formData","description":"file to upload","required":false,"type":"file"}],"responses":{"200":{"description":"successful operation","schema":{"$ref":"#/definitions/ApiResponse"}}},"security":[{"petstore_auth":["write:pets","read:pets"]}]}},"/store/inventory":{"get":{"tags":["store"],"summary":"Returns pet inventories by status","description":"Returns a map of status codes to quantities","operationId":"getInventory","produces":["application/json"],"parameters":[],"responses":{"200":{"description":"successful operation","schema":{"type":"object","additionalProperties":{"type":"integer","format":"int32"}}}},"security":[{"api_key":[]}]}},"/store/order":{"post":{"tags":["store"],"summary":"Place an order for a pet","description":"","operationId":"placeOrder","produces":["application/xml","application/json"],"parameters":[{"in":"body","name":"body","description":"order placed for purchasing the pet","required":true,"schema":{"$ref":"#/definitions/Order"}}],"responses":{"200":{"description":"successful operation","schema":{"$ref":"#/definitions/Order"}},"400":{"description":"Invalid Order"}}}},"/store/order/{orderId}":{"get":{"tags":["store"],"summary":"Find purchase order by ID","description":"For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions","operationId":"getOrderById","produces":["application/xml","application/json"],"parameters":[{"name":"orderId","in":"path","description":"ID of pet that needs to be fetched","required":true,"type":"integer","maximum":10.0,"minimum":1.0,"format":"int64"}],"responses":{"200":{"description":"successful operation","schema":{"$ref":"#/definitions/Order"}},"400":{"description":"Invalid ID supplied"},"404":{"description":"Order not found"}}},"delete":{"tags":["store"],"summary":"Delete purchase order by ID","description":"For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors","operationId":"deleteOrder","produces":["application/xml","application/json"],"parameters":[{"name":"orderId","in":"path","description":"ID of the order that needs to be deleted","required":true,"type":"integer","minimum":1.0,"format":"int64"}],"responses":{"400":{"description":"Invalid ID supplied"},"404":{"description":"Order not found"}}}},"/user":{"post":{"tags":["user"],"summary":"Create user","description":"This can only be done by the logged in user.","operationId":"createUser","produces":["application/xml","application/json"],"parameters":[{"in":"body","name":"body","description":"Created user object","required":true,"schema":{"$ref":"#/definitions/User"}}],"responses":{"default":{"description":"successful operation"}}}},"/user/createWithArray":{"post":{"tags":["user"],"summary":"Creates list of users with given input array","description":"","operationId":"createUsersWithArrayInput","produces":["application/xml","application/json"],"parameters":[{"in":"body","name":"body","description":"List of user object","required":true,"schema":{"type":"array","items":{"$ref":"#/definitions/User"}}}],"responses":{"default":{"description":"successful operation"}}}},"/user/createWithList":{"post":{"tags":["user"],"summary":"Creates list of users with given input array","description":"","operationId":"createUsersWithListInput","produces":["application/xml","application/json"],"parameters":[{"in":"body","name":"body","description":"List of user object","required":true,"schema":{"type":"array","items":{"$ref":"#/definitions/User"}}}],"responses":{"default":{"description":"successful operation"}}}},"/user/login":{"get":{"tags":["user"],"summary":"Logs user into the system","description":"","operationId":"loginUser","produces":["application/xml","application/json"],"parameters":[{"name":"username","in":"query","description":"The user name for login","required":true,"type":"string"},{"name":"password","in":"query","description":"The password for login in clear text","required":true,"type":"string"}],"responses":{"200":{"description":"successful operation","schema":{"type":"string"},"headers":{"X-Rate-Limit":{"type":"integer","format":"int32","description":"calls per hour allowed by the user"},"X-Expires-After":{"type":"string","format":"date-time","description":"date in UTC when token expires"}}},"400":{"description":"Invalid username/password supplied"}}}},"/user/logout":{"get":{"tags":["user"],"summary":"Logs out current logged in user session","description":"","operationId":"logoutUser","produces":["application/xml","application/json"],"parameters":[],"responses":{"default":{"description":"successful operation"}}}},"/user/{username}":{"get":{"tags":["user"],"summary":"Get user by user name","description":"","operationId":"getUserByName","produces":["application/xml","application/json"],"parameters":[{"name":"username","in":"path","description":"The name that needs to be fetched. Use user1 for testing. ","required":true,"type":"string"}],"responses":{"200":{"description":"successful operation","schema":{"$ref":"#/definitions/User"}},"400":{"description":"Invalid username supplied"},"404":{"description":"User not found"}}},"put":{"tags":["user"],"summary":"Updated user","description":"This can only be done by the logged in user.","operationId":"updateUser","produces":["application/xml","application/json"],"parameters":[{"name":"username","in":"path","description":"name that need to be updated","required":true,"type":"string"},{"in":"body","name":"body","description":"Updated user object","required":true,"schema":{"$ref":"#/definitions/User"}}],"responses":{"400":{"description":"Invalid user supplied"},"404":{"description":"User not found"}}},"delete":{"tags":["user"],"summary":"Delete user","description":"This can only be done by the logged in user.","operationId":"deleteUser","produces":["application/xml","application/json"],"parameters":[{"name":"username","in":"path","description":"The name that needs to be deleted","required":true,"type":"string"}],"responses":{"400":{"description":"Invalid username supplied"},"404":{"description":"User not found"}}}}},"securityDefinitions":{"petstore_auth":{"type":"oauth2","authorizationUrl":"http://petstore.swagger.io/oauth/dialog","flow":"implicit","scopes":{"write:pets":"modify pets in your account","read:pets":"read your pets"}},"api_key":{"type":"apiKey","name":"api_key","in":"header"}},"definitions":{"Order":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"petId":{"type":"integer","format":"int64"},"quantity":{"type":"integer","format":"int32"},"shipDate":{"type":"string","format":"date-time"},"status":{"type":"string","description":"Order Status","enum":["placed","approved","delivered"]},"complete":{"type":"boolean","default":false}},"xml":{"name":"Order"}},"Category":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"name":{"type":"string"}},"xml":{"name":"Category"}},"User":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"username":{"type":"string"},"firstName":{"type":"string"},"lastName":{"type":"string"},"email":{"type":"string"},"password":{"type":"string"},"phone":{"type":"string"},"userStatus":{"type":"integer","format":"int32","description":"User Status"}},"xml":{"name":"User"}},"Tag":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"name":{"type":"string"}},"xml":{"name":"Tag"}},"Pet":{"type":"object","required":["name","photoUrls"],"properties":{"id":{"type":"integer","format":"int64"},"category":{"$ref":"#/definitions/Category"},"name":{"type":"string","example":"doggie"},"photoUrls":{"type":"array","xml":{"name":"photoUrl","wrapped":true},"items":{"type":"string"}},"tags":{"type":"array","xml":{"name":"tag","wrapped":true},"items":{"$ref":"#/definitions/Tag"}},"status":{"type":"string","description":"pet status in the store","enum":["available","pending","sold"]}},"xml":{"name":"Pet"}},"ApiResponse":{"type":"object","properties":{"code":{"type":"integer","format":"int32"},"type":{"type":"string"},"message":{"type":"string"}}}},"externalDocs":{"description":"Find out more about Swagger","url":"http://swagger.io"}}
+{
+  "swagger": "2.0",
+  "schemes": [
+    "http"
+  ],
+  "basePath": "/",
+  "host": "",
+  "info": {
+    "version": "1.0",
+    "title": "Cloud Work Bench",
+    "description": "Cloud Workbench Api"
+  },
+  "paths": {
+    "/scenarios/{scenario}/blocks/{sourceBlockId}/disconnect/{targetBlockId}": {
+      "parameters": [
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "sourceBlockId",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "targetBlockId",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Disconnect Blocks",
+        "description": "",
+        "operationId": "DELETE_scenarios-scenario-blocks-sourceBlockId-disconnect-targetBlockId",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/users": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get Users",
+        "description": "",
+        "operationId": "GET_users",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "Authlongtermtoken",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/userInfoPayload"
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "text/plain": "Mocking is enabled, but there is no endpoint defined for GET /."
+            }
+          }
+        }
+      }
+    },
+    "/shares/by-others": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "Share/Unshare"
+        ],
+        "summary": "Get Shared By Others",
+        "description": "",
+        "operationId": "GET_shares-by-others",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/workspaceOwnerPayload"
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "text/plain": "Mocking is enabled, but there is no endpoint defined for GET /."
+            }
+          }
+        }
+      }
+    },
+    "/users/{user}": {
+      "parameters": [
+        {
+          "name": "user",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get User",
+        "description": "",
+        "operationId": "GET_users-user",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "Authlongtermtoken",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/userInfoPayload"
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "text/plain": "Mocking is enabled, but there is no endpoint defined for GET /."
+            }
+          }
+        }
+      }
+    },
+    "/dashboards": {
+      "parameters": [],
+      "post": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Add Dashboard",
+        "description": "At the time of creating new dashboard, user provides name and description of the dashboard.\r\n\r\nBased on this information, following actions happen :\r\n\r\n 1. New dashboard is created with provided information.\r\n 2. A new empty scenario group, with default configuration, is created inside this dashboard.\r\n 3. The dashboard , now with an id and an empty scenario group in it, is returned back to user.",
+        "operationId": "POST_dashboards",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/dashboardPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/dashboardPayload"
+            }
+          }
+        }
+      }
+    },
+    "/dashboards/{dashboard}": {
+      "parameters": [
+        {
+          "name": "dashboard",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Update Dashboard",
+        "description": "After a dashboard has been created, it is possible to change it's name and description.\r\nSuch updates must follow following constraints:\r\n\r\n - Name of dashboard can not be more than 30 characters long. In case of no name, the default, **\"Unnamed Dashboard\"** is used.\r\n - Description of a dashboard can be empty, and can not be more than 300 characters.",
+        "operationId": "PUT_dashboards-dashboard",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/dashboardPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/dashboardPayload"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Dashboard",
+        "description": " A dashboard in workbench, has a name and description, along with scenario groups it contained inside it.\r\n",
+        "operationId": "GET_dashboards-dashboard",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/dashboardPayload"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Delete Dashboard",
+        "description": "Deleting a dashboard also means deleting everything within.  All the contained scenario groups, and the scenarios within those groups are delete too.",
+        "operationId": "DELETE_dashboards-dashboard",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "string",
+              "description": "Dashboard successful deleted message."
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "type": [
+                "object",
+                "string"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario}/blocks/{block}": {
+      "parameters": [
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "block",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Update Block",
+        "description": "",
+        "operationId": "PUT_scenarios-scenario-blocks-block",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Get Block",
+        "description": "",
+        "operationId": "GET_scenarios-scenario-blocks-block",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Delete Block",
+        "description": "",
+        "operationId": "DELETE_scenarios-scenario-blocks-block",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Create Block",
+        "description": "",
+        "operationId": "POST_scenarios-scenario-blocks-block",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        }
+      }
+    },
+    "/groups": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "User Group"
+        ],
+        "summary": "Get User Groups",
+        "description": "",
+        "operationId": "GET_groups",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "Authlongtermtoken",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/userGroupPayload"
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "text/plain": "Mocking is enabled, but there is no endpoint defined for GET /."
+            }
+          }
+        }
+      }
+    },
+    "/groups/{group}": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "User Group"
+        ],
+        "summary": "Get User Group",
+        "description": "",
+        "operationId": "GET_groups-group",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "Authlongtermtoken",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/userGroupPayload"
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "text/plain": "Mocking is enabled, but there is no endpoint defined for GET /."
+            }
+          }
+        }
+      }
+    },
+    "/scenariogroups/{group}/scenarios/{scenario}/share/namables": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Share Scenario With Nameables",
+        "description": "Share the scenario with given list of groups and users.\ncreate for each sceanrio a configuration block with given name an description and users and groups",
+        "operationId": "POST_scenariogroups-group-scenarios-scenario-share-namables",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                "userIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "groupIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "userIds",
+                "groupIds"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        }
+      }
+    },
+    "/dashboards/{dashboard}/default": {
+      "parameters": [
+        {
+          "name": "dashboard",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Make Default",
+        "description": "Setting  a new dashboard as default will unset  the current one as not default. **At a time there must be and can be only one default dashboard.**\n\nWhen next time user logs in, this newly set default dashboard is shown as first.",
+        "operationId": "PUT_dashboards-dashboard-default",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/scenariogroups/{group}/scenarios/{scenario}": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Delete Scenario",
+        "description": "Deletes scenario with given Id.\nAll containing blocks are deleted too.",
+        "operationId": "DELETE_scenariogroups-group-scenarios-scenario",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Get Scenario",
+        "description": "",
+        "operationId": "GET_scenariogroups-group-scenarios-scenario",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioPayload"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Update Scenario",
+        "description": "",
+        "operationId": "PUT_scenariogroups-group-scenarios-scenario",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/scenarioPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioPayload"
+            }
+          }
+        }
+      }
+    },
+    "/dashboards/{dashboard}/scenariogroups": {
+      "parameters": [
+        {
+          "name": "dashboard",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "ScenarioGroup"
+        ],
+        "summary": "Create Group",
+        "description": "",
+        "operationId": "POST_dashboards-dashboard-scenariogroups",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/scenarioGroupPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioGroupPayload"
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario}/blocks/{blockId}/connections": {
+      "parameters": [
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "blockId",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Get incomming Block Connections",
+        "description": "",
+        "operationId": "GET_scenarios-scenario-blocks-blockId-connections",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "description": "BlockIds",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shares/with-others": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "Share/Unshare"
+        ],
+        "summary": "Get Shared With Others",
+        "description": "",
+        "operationId": "GET_shares-with-others",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/sharedWithOthersPayload"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboards/{dashboard}/scenariogroups/{group}": {
+      "parameters": [
+        {
+          "name": "dashboard",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "ScenarioGroup"
+        ],
+        "summary": "Get Group",
+        "description": "Gets Scenario group with given Id.",
+        "operationId": "GET_dashboards-dashboard-scenariogroups-group",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioGroupPayload"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ScenarioGroup"
+        ],
+        "summary": "Update Group",
+        "description": "",
+        "operationId": "PUT_dashboards-dashboard-scenariogroups-group",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/scenarioGroupPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioGroupPayload"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ScenarioGroup"
+        ],
+        "summary": "Delete Group",
+        "description": "Delets scenario group with given Id.\nAll scenarios, along with their corrosponding blocks are deleted too.",
+        "operationId": "DELETE_dashboards-dashboard-scenariogroups-group",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/dashboards/{dashboard}/scenariogroups/{group}/move-to/{newDashboard}": {
+      "parameters": [
+        {
+          "name": "dashboard",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "newDashboard",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "tags": [
+          "ScenarioGroup"
+        ],
+        "summary": "Move Group",
+        "description": "Moves the scenario group with give id to another dashboard.\nThis changed the UI to show the scenario group in the moved to dashboard.\nNext time when user logs in, this scenario group is shown under that newly moved to dashboard.",
+        "operationId": "PUT_dashboards-dashboard-scenariogroups-group-move-to-newDashboard",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/scenarioGroupPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioGroupPayload"
+            }
+          }
+        }
+      }
+    },
+    "/workbench/dashboards/{dashboard}/scenariogroups/{group}/scenarios": {
+      "parameters": [
+        {
+          "name": "dashboard",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Get Scenarios",
+        "description": "",
+        "operationId": "GET_workbench-dashboards-dashboard-scenariogroups-group-scenarios",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/scenarioPayload"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenariogroups/{group}/scenarios": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Add Scenario",
+        "description": "",
+        "operationId": "POST_scenariogroups-group-scenarios",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/scenarioPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioPayload"
+            }
+          }
+        }
+      }
+    },
+    "/scenariogroups/{group}/scenarios/{scenario}/move-to/{newGroup}": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "newGroup",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Move Scenario",
+        "description": "",
+        "operationId": "PUT_scenariogroups-group-scenarios-scenario-move-to-newGroup",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/scenarioPayload"
+            }
+          }
+        }
+      }
+    },
+    "/scenariogroups/{group}/scenarios/{scenario}/share/namables/{namable}": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "namable",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": " (not necessary)Share Scenario With Namable",
+        "description": "Share the scenario with users or user group, with given id.",
+        "operationId": "POST_scenariogroups-group-scenarios-scenario-share-namables-namable",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        }
+      }
+    },
+    "/scenariogroups/{group}/scenarios/{scenario}/unshare": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": " (not necessary)Unshare Scenario With Namables",
+        "description": "Unshare the scenario with everyone, be it user of group of users.",
+        "operationId": "DELETE_scenariogroups-group-scenarios-scenario-unshare",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/blockPayload"
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario}/blocks/{sourceBlockId}/connect/{targetBlockId}": {
+      "parameters": [
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "sourceBlockId",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "targetBlockId",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Connect Blocks",
+        "description": "",
+        "operationId": "POST_scenarios-scenario-blocks-sourceBlockId-connect-targetBlockId",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario}/blocks": {
+      "parameters": [
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Block"
+        ],
+        "summary": "Get Blocks",
+        "description": "",
+        "operationId": "GET_scenarios-scenario-blocks",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/blockPayload"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenariogroups/{group}/scenarios/{scenario}/unshare/{namable}": {
+      "parameters": [
+        {
+          "name": "group",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "scenario",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "namable",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": " (not necessary)Unshare With Namable",
+        "description": "Unshare the scenario with user or user group, with given id.",
+        "operationId": "DELETE_scenariogroups-group-scenarios-scenario-unshare-namable",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/workbench": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Get Workbench",
+        "description": "Every user has a space provided, called as workbench of the user.\r\nThis workbench consists of dashboard(s).  Out of these dashboards, one is assigned as the default dashboard.\r\nThis default dashboard is the one that is presented to the user when loading workbench.\r\n\r\nA **workbench consist of one and only one default dashboard**.",
+        "operationId": "GET_workbench",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/workbenchPayload"
+            },
+            "examples": {
+              "application/json": {
+                "dashboards": [
+                  "6f4135f5-aa18-4f31-bcf7-f54aca6b7a4f",
+                  "048b00fb-56a4-4521-a54b-4ab4ee925859"
+                ],
+                "default_dashboard": "6f4135f5-aa18-4f31-bcf7-f54aca6b7a4f"
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "text/plain": "Mocking is enabled, but there is no endpoint defined for GET /."
+            }
+          }
+        }
+      }
+    },
+    "/shareables": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "Scenario"
+        ],
+        "summary": "Get Users and Groups for Scenarios",
+        "description": "gets users and groups with with optional restriction for the given scenarios ",
+        "operationId": "GET_shareables",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "scenarioIds",
+            "in": "query",
+            "required": true,
+            "type": "array",
+            "uniqueItems": true,
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "Authlongtermtoken",
+            "in": "header",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "description": "List with user and groups result",
+              "required": [
+                "users",
+                "groups"
+              ],
+              "properties": {
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "user": {
+                        "$ref": "#/definitions/userInfoPayload"
+                      },
+                      "alreadyUsed": {
+                        "type": "array",
+                        "uniqueItems": false,
+                        "items": {}
+                      }
+                    },
+                    "required": [
+                      "user",
+                      "alreadyUsed"
+                    ]
+                  }
+                },
+                "groups": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "group": {
+                        "type": "object"
+                      },
+                      "alreadUsed": {
+                        "type": [
+                          "string",
+                          "array"
+                        ],
+                        "items": {}
+                      }
+                    },
+                    "required": [
+                      "group",
+                      "alreadUsed"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "examples": {
+              "text/plain": "Mocking is enabled, but there is no endpoint defined for GET /."
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "X-Keycloak-Refresh-Token",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "secondaryknowledgeblock": {
+      "type": "object",
+      "description": "container",
+      "required": [
+        "shareOption"
+      ],
+      "properties": {
+        "shareOption": {
+          "type": "string",
+          "enum": [
+            "ALL",
+            "RESOURCE_ONLY"
+          ]
+        }
+      },
+      "example": {
+        "shareOption": "ALL"
+      }
+    },
+    "workspacePayload": {
+      "type": "object",
+      "properties": {
+        "workspaceid": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspaceid",
+        "name",
+        "description"
+      ]
+    },
+    "userGroupPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "userInfoPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "userName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "userName"
+      ]
+    },
+    "workspaceOwnerPayload": {
+      "type": "object",
+      "properties": {
+        "owner": {
+          "$ref": "#/definitions/userInfoPayload"
+        },
+        "workspace": {
+          "$ref": "#/definitions/workspacePayload"
+        }
+      },
+      "required": [
+        "owner",
+        "workspace"
+      ]
+    },
+    "sharedWithOthersPayload": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "$ref": "#/definitions/workspacePayload"
+        },
+        "users": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "$ref": "#/definitions/userInfoPayload"
+          }
+        }
+      }
+    },
+    "blockPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "SOURCE",
+            "THINKER",
+            "DATASET",
+            "DISTRIBUTION"
+          ]
+        },
+        "workspace": {
+          "type": "string"
+        },
+        "subType": {
+          "type": "string",
+          "enum": [
+            "SHARE",
+            "IMPORTER",
+            "SECONDARY_KNOWLEDGE"
+          ]
+        },
+        "addtionalInfo": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/secondaryknowledgeblock"
+            },
+            {
+              "$ref": "#/definitions/shareBlock"
+            }
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "type"
+      ],
+      "example": {
+        "id": "89285353-c2c7-2d5d-ccbc-51b6bb31715d",
+        "name": "yubamVSNUSw",
+        "description": "jWCJgjtOICqCsOPzwtCZxNCsIxbZLYEi",
+        "type": "DATASET"
+      }
+    },
+    "dashboardPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string",
+          "default": "Unnamed Dashboard",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "groups": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "example": {
+        "id": "303a781e-c071-4c43-8c4d-bbac0b78fd83",
+        "name": "Lindsey Craft",
+        "description": "bywyypgqorighfawpftjqevznxclmndaawethajnahzxgxzzdu",
+        "groups": [
+          "2dba5a91-1d9a-4db2-a337-6e5992f3743b",
+          "f246b8cb-9a34-4bff-a2aa-d58c1bcb28b4"
+        ]
+      }
+    },
+    "scenarioGroupPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string",
+          "default": "Untitled",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "scenarios": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "description": {
+          "type": "string",
+          "default": "Please add a description.",
+          "maxLength": 80
+        }
+      },
+      "required": [
+        "name",
+        "scenarios"
+      ],
+      "example": {
+        "id": "5b69196c-784e-46b1-b53a-90e38ca9be20",
+        "name": "Lindsey Craft",
+        "description": "bywyypgqorighfawpftjqevznxclmndaawethajn",
+        "scenarios": [
+          "b8161652-31fa-4fe2-a298-a9d650f4bd2a",
+          "cdd54524-0036-49d1-a3e8-df10284b9a5d"
+        ]
+      }
+    },
+    "workbenchPayload": {
+      "type": "object",
+      "properties": {
+        "dashboards": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "format": "uuid"
+          }
+        },
+        "default_dashboard": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "dashboards",
+        "default_dashboard"
+      ],
+      "example": {
+        "dashboards": [
+          "6f4135f5-aa18-4f31-bcf7-f54aca6b7a4f",
+          "048b00fb-56a4-4521-a54b-4ab4ee925859"
+        ],
+        "default_dashboard": "6f4135f5-aa18-4f31-bcf7-f54aca6b7a4f"
+      }
+    },
+    "scenarioPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "default": "Unnamed",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "blocks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "dataset": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "name",
+        "blocks",
+        "dataset"
+      ],
+      "example": {
+        "id": "7a81c24e-b985-4b57-84fc-a339108c5ae0",
+        "name": "Lindsey Craft",
+        "description": "bywyypgqorighfawpftjqevznxclmndaawethajnahzxgxzzdu",
+        "blocks": [
+          "f6efc5b1-4e3f-4b3f-b555-fdb9c3240fc3",
+          "ac49f2cf-0d2e-4747-a0f0-f0ac42e42c50"
+        ],
+        "dataset": "f6efc5b1-4e3f-4b3f-b555-fdb9c3240fc3",
+        "dataSetBlock": "f6efc5b1-4e3f-4b3f-b555-fdb9c3240fc3"
+      }
+    },
+    "alreadyUsedPayload": {
+      "type": "object",
+      "properties": {
+        "scenarioName": {
+          "type": "string"
+        },
+        "shareBlockName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "scenarioName",
+        "shareBlockName"
+      ]
+    },
+    "shareBlock": {
+      "type": "object",
+      "description": "container",
+      "properties": {
+        "users": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/userInfoPayload"
+          }
+        },
+        "groups": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/userGroupPayload"
+          }
+        }
+      },
+      "required": [
+        "users",
+        "groups"
+      ],
+      "example": {
+        "users": [],
+        "groups": []
+      }
+    }
+  }
+}

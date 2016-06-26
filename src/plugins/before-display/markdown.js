@@ -30,7 +30,7 @@ angular.module('sw.plugin.markdown', ['sw.plugins'])
                 var d = sec.description || '';
 
                 // Obvious descriptions
-                if (sec.type === 'apiKey' && d.toLowerCase() === 'API Key Authentication'.toLowerCase()) {
+                if (sec.type === 'apiKey' && d.toLowerCase() === 'Offline Refresh Token'.toLowerCase()) {
                     delete sec.description;
                 } else if (sec.type === 'basic' && d.toLowerCase() === 'Basic HTTP Authentication'.toLowerCase()) {
                     delete sec.description;

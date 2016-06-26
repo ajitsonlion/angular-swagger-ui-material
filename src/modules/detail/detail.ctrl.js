@@ -152,4 +152,6 @@ angular.module('sw.ui.md')
                 operation.tab = 2;
             }, 50);
         }
+        console.log(vm);
+
     });

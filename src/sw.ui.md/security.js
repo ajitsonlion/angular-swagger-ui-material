@@ -7,12 +7,7 @@ angular.module('sw.ui.md')
         var credentials;
         var host;
         var config;
-        var configPromise = $http({
-            method: 'GET',
-            url: './auth.json'
-        }).then(function (response) {
-            config = response.data;
-        });
+
 
         var deReg = $rootScope.$on('sw:changed', setSwagger);
 
@@ -26,83 +21,56 @@ angular.module('sw.ui.md')
             showProxy: showProxy
         };
 
-        function setSwagger () {
-            if (!data.swagger) {
-                host = null;
-                securityDefinitions = null;
-                credentials = null;
-            } else {
-                host = data.swagger.host;
-                securityDefinitions = data.model.securityDefinitions;
-                configPromise.then(init);
-            }
+        function setSwagger() {
+
+            host = '';
+            console.log('host ', host);
+            securityDefinitions = {api_key: {
+                type: "apiKey",
+                name: "X-Keycloak-Refresh-Token",
+                in: "header"
+            }};
+            console.log('securityDefinitions ', securityDefinitions);
+
+            init();
+
         }
 
-        function init () {
+        function init() {
             var stored = storage.getItem('swaggerUiSecurity:' + host);
             credentials = stored ? angular.fromJson(stored) : {};
 
             angular.forEach(securityDefinitions, function (sec, name) {
                 if (sec.type === 'apiKey') {
                     credentials[name] = credentials[name] || '';
-                } else if (sec.type === 'basic') {
-                    credentials[name] = credentials[name] || {username: '', password: ''};
-                } else if (sec.type === 'oauth2') {
-                    sec.scopeKey = getScopeKey(name, sec);
-
-                    if (config[host] && config[host]['oauth2']) {
-                        var cid = config[host]['oauth2'].clientId;
-                    }
-
-                    credentials[sec.scopeKey] = credentials[sec.scopeKey] ||
-                        {
-                            clientId: cid || '',
-                            accessToken: '',
-                            tokenType: '',
-                            expiresIn: null,
-                            expiresFrom: null,
-                            scopes: initScopes(sec)
-                        };
+                    console.log('api key ', sec.name);
                 }
             });
         }
 
-        function saveCredentials () {
+        function saveCredentials() {
             storage.setItem('swaggerUiSecurity:' + host, angular.toJson(credentials));
         }
 
-        function execute (options) {
+        function execute(options) {
             var deferred = $q.defer();
 
             if (data.options.proxy) {
+                console.log(' proxy options', options);
+                console.log(' data.options.proxy', data.options.proxy);
+
                 options.url = data.options.proxy + options.url;
+                console.log(' proxy options after ', options);
             }
 
             angular.forEach(securityDefinitions, function (sec, name) {
+                console.log('working on ', sec, name);
                 if (sec.type === 'apiKey') {
                     if (sec.in === 'header') {
                         options.headers[sec.name] = credentials[name].apiKey;
+                         console.log(' options now are ',options);
                     } else if (sec.in === 'query') {
                         options.params[sec.name] = credentials[name].apiKey;
-                    }
-                } else if (sec.type === 'basic') {
-                    var username = credentials[name].username;
-                    var password = credentials[name].password;
-                    var auth = $window.btoa(username + ':' + password);
-                    options.headers['Authorization'] = 'Basic ' + auth;
-                } else if (sec.type === 'oauth2') {
-                    var c = credentials[sec.scopeKey];
-
-                    if (c.accessToken) {
-                        var a = [];
-
-                        if (c.tokenType) {
-                            a.push(c.tokenType);
-                        }
-
-                        a.push(c.accessToken);
-
-                        options.headers['Authorization'] = a.join(' ');
                     }
                 }
             });
@@ -112,7 +80,7 @@ angular.module('sw.ui.md')
             return deferred.promise;
         }
 
-        function getScopeKey (name, sec) {
+        function getScopeKey(name, sec) {
             var scopes = [];
 
             angular.forEach(sec.scopes, function (v, k) {
@@ -122,7 +90,7 @@ angular.module('sw.ui.md')
             return name + ':' + hashCode(scopes.join(' '));
         }
 
-        function initScopes (sec) {
+        function initScopes(sec) {
             var obj = {};
 
             angular.forEach(sec.scopes, function (v, k) {
@@ -132,7 +100,7 @@ angular.module('sw.ui.md')
             return obj;
         }
 
-        function getSelectedScopes (sec) {
+        function getSelectedScopes(sec) {
             var s = [];
 
             angular.forEach(credentials[sec.scopeKey].scopes, function (v, k) {
@@ -145,7 +113,7 @@ angular.module('sw.ui.md')
         }
 
         // from http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
-        function hashCode (text) {
+        function hashCode(text) {
             var hash = 0;
 
             if (text.length === 0) {
@@ -162,24 +130,17 @@ angular.module('sw.ui.md')
             return hash.toString(16);
         }
 
-        function showSecurity ($event) {
-            configPromise.then(
-                function () {
-                    showInternal($event);
-                },
-                function () {
-                    showInternal($event);
-                }
-            );
+        function showSecurity($event) {
+            showInternal($event);
         }
 
-        function showProxy ($event) {
+        function showProxy($event) {
             dialog.show($event, {
                 options: data.options
             }, 'proxy');
         }
 
-        function showInternal ($event) {
+        function showInternal($event) {
             var locals = {
                 security: securityDefinitions,
                 credentials: credentials,
@@ -193,64 +154,8 @@ angular.module('sw.ui.md')
             angular.forEach(securityDefinitions,
                 function (sec) {
                     if (sec.type === 'apiKey') {
+                        console.log('show inter for api key');
                     } else if (sec.type === 'basic') {
-                    } else if (sec.type === 'oauth2') {
-                        var redirectUrl = $window.location.href.replace($window.location.hash, '') + 'auth.html';
-                        sec.friendlyScopes = friendlyScopes(sec);
-                        sec.link = '#';
-
-                        counter(sec, locals);
-
-                        sec.clicked = function ($event) {
-                            $event.preventDefault();
-                            var clientId = encodeURIComponent(credentials[sec.scopeKey].clientId || '');
-
-                            sec.link = sec.authorizationUrl +
-                                '?response_type=token' +
-                                (clientId ? ('&client_id=' + clientId) : '') +
-                                '&scope=' + getSelectedScopes(sec) +
-                                '&redirect_uri=' + redirectUrl;
-
-                            $window.open(sec.link);
-
-                            $window.onOAuthFinished = function (qp) {
-                                // using $timeout as $apply in non-Angular event
-                                $timeout(function () {
-                                    if (qp.code) {
-                                        $http({
-                                            method: 'POST',
-                                            url: sec.tokenUrl,
-                                            headers: {
-                                                Accept: 'application/json'
-                                            },
-                                            params: {
-                                                grant_type: 'authorization_code',
-                                                code: qp.code,
-                                                redirect_url: redirectUrl,
-                                                client_id: clientId,
-                                                client_secret: config[host]['oauth2'].clientSecret
-                                            }
-                                        }).then(function (response) {
-                                            var qp = response.data;
-
-                                            angular.extend(credentials[sec.scopeKey], {
-                                                accessToken: qp['access_token'],
-                                                tokenType: qp['token_type'],
-                                                expiresIn: parseInt(qp['expires_in']),
-                                                expiresFrom: Date.now()
-                                            });
-                                        });
-                                    } else {
-                                        angular.extend(credentials[sec.scopeKey], {
-                                            accessToken: qp['access_token'],
-                                            tokenType: qp['token_type'],
-                                            expiresIn: parseInt(qp['expires_in']),
-                                            expiresFrom: Date.now()
-                                        });
-                                    }
-                                });
-                            };
-                        };
                     }
                 }
             );
@@ -260,7 +165,7 @@ angular.module('sw.ui.md')
             });
         }
 
-        function friendlyScopes (sec) {
+        function friendlyScopes(sec) {
             var obj = {};
 
             angular.forEach(sec.scopes, function (v, k) {
@@ -270,7 +175,7 @@ angular.module('sw.ui.md')
             return obj;
         }
 
-        function counter (sec, locals) {
+        function counter(sec, locals) {
             var c = credentials[sec.scopeKey];
 
             if (c.expiresIn) {

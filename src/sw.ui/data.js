@@ -141,7 +141,8 @@ angular.module('sw.ui')
         }
 
         function hasSecurity (swagger) {
-            return Object.keys(swagger.securityDefinitions || {}).length;
+           // return Object.keys(swagger.securityDefinitions || {}).length;
+            return true;
         }
 
         function onError (error) {
