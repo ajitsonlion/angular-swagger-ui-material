@@ -21,10 +21,6 @@ angular
          * Send API explorer request
          */
         function send (swagger, operation, values, mock) {
-            console.log('swagger ',swagger );
-            console.log( 'operation ',operation );
-            console.log( 'values ', values);
-            console.log( 'mock ',mock);
 
             var deferred = $q.defer();
             var baseUrl = base(swagger);
