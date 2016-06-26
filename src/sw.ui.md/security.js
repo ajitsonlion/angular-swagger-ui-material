@@ -24,13 +24,11 @@ angular.module('sw.ui.md')
         function setSwagger() {
 
             host = '';
-            console.log('host ', host);
-            securityDefinitions = {api_key: {
+             securityDefinitions = {api_key: {
                 type: "apiKey",
                 name: "X-Keycloak-Refresh-Token",
                 in: "header"
             }};
-            console.log('securityDefinitions ', securityDefinitions);
 
             init();
 
@@ -43,8 +41,7 @@ angular.module('sw.ui.md')
             angular.forEach(securityDefinitions, function (sec, name) {
                 if (sec.type === 'apiKey') {
                     credentials[name] = credentials[name] || '';
-                    console.log('api key ', sec.name);
-                }
+                 }
             });
         }
 
@@ -56,20 +53,15 @@ angular.module('sw.ui.md')
             var deferred = $q.defer();
 
             if (data.options.proxy) {
-                console.log(' proxy options', options);
-                console.log(' data.options.proxy', data.options.proxy);
 
                 options.url = data.options.proxy + options.url;
-                console.log(' proxy options after ', options);
-            }
+             }
 
             angular.forEach(securityDefinitions, function (sec, name) {
-                console.log('working on ', sec, name);
-                if (sec.type === 'apiKey') {
+                 if (sec.type === 'apiKey') {
                     if (sec.in === 'header') {
                         options.headers[sec.name] = credentials[name].apiKey;
-                         console.log(' options now are ',options);
-                    } else if (sec.in === 'query') {
+                     } else if (sec.in === 'query') {
                         options.params[sec.name] = credentials[name].apiKey;
                     }
                 }
@@ -154,8 +146,7 @@ angular.module('sw.ui.md')
             angular.forEach(securityDefinitions,
                 function (sec) {
                     if (sec.type === 'apiKey') {
-                        console.log('show inter for api key');
-                    } else if (sec.type === 'basic') {
+                     } else if (sec.type === 'basic') {
                     }
                 }
             );
